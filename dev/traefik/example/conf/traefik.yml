@@ -1,0 +1,24 @@
+# Traefik 静态配置示例
+# 从 example/conf/ 复制到 traefik/ 后挂载使用
+
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  insecure: true
+  dashboard: true
+
+providers:
+  docker:
+    exposedByDefault: false
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+# 日志
+log:
+  level: INFO

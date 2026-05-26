@@ -1,0 +1,17 @@
+# Prometheus 示例配置
+# 从 example/prometheus/ 复制到 cloud-grafana/prometheus.yml 后生效
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # 示例：监控本地服务（替换为实际目标）
+  # - job_name: "my-app"
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     - targets: ["host.docker.internal:8080"]
