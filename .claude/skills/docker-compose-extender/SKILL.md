@@ -254,18 +254,6 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 echo "Self-signed cert generated. DO NOT commit *.pem to git."
 ```
 
-### example/sh/ 规范
-
-- 只提供 `start.sh` —— `docker-compose up -d`
-- 不重复创建 stop/restart/logs/shell/backup 等冗余脚本，用户自己会敲
-
-```bash
-#!/bin/sh
-# example/sh/start.sh
-cd "$(dirname "$0")/../.." || exit 1
-docker-compose up -d
-```
-
 ## 执行流程
 
 ### Standalone 模式
@@ -278,14 +266,12 @@ docker-compose up -d
    - `example/init/` — 初始化脚本（数据库类服务）
    - `example/conf/` — 最小可用配置文件模板
    - `example/ssl/` — 自签证书生成脚本（需要 SSL 的服务）
-   - `example/sh/` — start/stop/restart/logs/shell/backup 脚本
+   - `example/shared/` — 共享目录占位
 6. 创建目录并写入所有文件
 7. 检查 `.gitignore` 是否已覆盖新服务的运行时目录，如未覆盖则追加
 8. 向用户说明：
    - 复制 `example/conf/*` 到 `<service>/conf/`（即 `<service>/<service>/conf/`）并根据需要修改
    - 运行 `example/ssl/gen-selfsigned.sh` 生成证书（如需）
-   - 赋予脚本执行权限：`chmod +x example/sh/*.sh`
-   - 快捷脚本在 `<service>/` 目录内执行 `docker-compose`
 
 ### Stack 模式
 
@@ -297,7 +283,7 @@ docker-compose up -d
    - `example/<service>/init/` — 各数据库初始化脚本
    - `example/<service>/conf/` — 各服务配置模板
    - `example/<service>/ssl/` — 证书生成脚本
-   - `example/sh/` — 栈级操作脚本（操作整个栈）
+   - `example/shared/` — 共享目录占位
 6. 创建目录并写入所有文件
 7. 检查 `.gitignore` 追加忽略规则
 8. 向用户说明：
@@ -354,24 +340,6 @@ services:
 db = db.getSiblingDB('demo');
 db.createCollection('sample');
 db.sample.insertOne({ message: 'Hello from dockerdbv2', createdAt: new Date() });
-```
-
-```bash
-#!/bin/sh
-# mongodb/example/sh/start.sh
-cd "$(dirname "$0")/../.." || exit 1
-docker-compose up -d
-```
-
-```bash
-#!/bin/sh
-# mongodb/example/sh/backup.sh
-SERVICE_DIR="$(dirname "$0")/../.."
-BACKUP_DIR="$SERVICE_DIR/backup"
-mkdir -p "$BACKUP_DIR"
-docker-compose exec mongodb mongodump --out "/tmp/dump"
-docker-compose exec mongodb tar czf - -C /tmp dump > "$BACKUP_DIR/mongodb-$(date +%Y%m%d_%H%M%S).tar.gz"
-echo "MongoDB backup saved"
 ```
 
 并在 `.gitignore` 追加 `mongodb/mongodb/` 以排除整个运行时目录。
@@ -458,27 +426,6 @@ server {
     # ssl_certificate /etc/nginx/ssl/cert.pem;
     # ssl_certificate_key /etc/nginx/ssl/key.pem;
 }
-```
-
-```bash
-#!/bin/sh
-# web/example/sh/start.sh
-cd "$(dirname "$0")/../.." || exit 1
-docker-compose up -d
-```
-
-```bash
-#!/bin/sh
-# web/example/sh/backup.sh
-STACK_DIR="$(dirname "$0")/../.."
-BACKUP_DIR="$STACK_DIR/backup"
-mkdir -p "$BACKUP_DIR"
-for svc in mysql8 redis nginx; do
-  if [ -d "$STACK_DIR/$svc/data" ]; then
-    tar czf "$BACKUP_DIR/${svc}-$(date +%Y%m%d_%H%M%S).tar.gz" -C "$STACK_DIR/$svc" data/ 2>/dev/null || true
-  fi
-done
-echo "Stack backup saved to $BACKUP_DIR"
 ```
 
 并在 `.gitignore` 追加 `web/mysql8/`、`web/redis/`、`web/nginx/` 以排除各运行时目录。
