@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis-server
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=223456
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+      - REDIS_APPENDONLY=yes
+      - REDIS_APPENDFSYNC=everysec
+      - REDIS_MAXMEMORY=256mb
+      - REDIS_MAXMEMORY_POLICY=allkeys-lru
+    volumes:
+      - ./redis/data:/data
+      - ./redis/conf:/usr/local/etc/redis
+      - ./redis/logs:/var/log/redis
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass 223456
+    sysctls:
+      - net.core.somaxconn=511
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "-a", "223456", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - redis-net
+
+volumes:
+  redis_data:
+    driver: local
+  redis_conf:
+    driver: local
+
+networks:
+  redis-net:
+    driver: bridge

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  hbase:
+    image: i718blu36dcakm.xuanyuan.run/harisekhon/hbase
+    container_name: hbase-standalone
+    ports:
+      - "16010:16010"   # Web UI
+      - "16000:16000"   # Master
+      - "16020:16020"   # RegionServer
+      - "2181:2181"     # ZooKeeper
+    environment:
+      - HBASE_MANAGES_ZK=true
+      - HBASE_REGIONSERVER_PORT=16020
+    volumes:
+      - ./hbase/data:/opt/hbase/data
+      - ./hbase/shared:/shared
+    restart: unless-stopped
+    networks:
+      - hbase-net
+
+networks:
+  hbase-net:
+    driver: bridge

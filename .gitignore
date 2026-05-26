@@ -1,0 +1,32 @@
+# ============================================
+# Docker 运行时挂载目录排除
+# 原则：一个容器对应一个运行时目录，整目录排除
+# Standalone: <service>/<service>/  (双重 service 名)
+# Stack:      <stack>/<service>/    (单层 service 名)
+# ============================================
+
+# --- Standalone 服务 ---
+mysql/mysql/
+redis/redis/
+postgresql/postgresql/
+rabbitmq/rabbitmq/
+nginx/nginx/
+
+# --- Stack: dev ---
+dev/hadoop/hadoop/
+dev/hbase/hbase/
+dev/hive/hive/
+dev/traefik/traefik/
+
+# --- Stack: cloud-grafana ---
+cloud-grafana/grafana/
+cloud-grafana/prometheus/
+
+# --- 通用排除 ---
+.env
+
+# 运行时 SSL 证书（真实证书绝不提交）
+**/ssl/*.pem
+**/ssl/*.key
+**/ssl/*.crt
+

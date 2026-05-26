@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  hive:
+    image: i718blu36dcakm.xuanyuan.run/apache/hive:4.0.0
+    container_name: hive-single
+    hostname: hive
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    environment:
+      SERVICE_NAME: hiveserver2
+    volumes:
+      - ./hive/data:/opt/hive/data
+      - ./hive/shared:/shared
+      - ./hive/hive-conf/hive-site.xml:/opt/hive/conf/hive-site.xml
+    networks:
+      - hive-net
+
+networks:
+  hive-net:
+    driver: bridge

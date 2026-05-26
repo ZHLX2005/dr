@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  hadoop-master:
+    image: i718blu36dcakm.xuanyuan.run/harisekhon/hadoop
+    container_name: hadoop-all-in-one
+    hostname: hadoop-master
+    environment:
+      - USER=container
+      - PASSWORD=223456
+    ports:
+      - "9870:9870"   # NameNode Web UI (Hadoop 3)
+      - "9864:9864"   # DataNode
+      - "8088:8088"   # YARN ResourceManager
+      - "19888:19888" # JobHistory Server
+      - "8042:8042"   # NodeManager
+      - "2222:22"     # SSH
+    volumes:
+      - ./hadoop/data/hdfs:/hadoop/dfs
+      - ./hadoop/data/mapred:/tmp/hadoop-mapred
+      - ./hadoop/logs:/hadoop/logs
+      - ./hadoop/shared:/shared
+    restart: unless-stopped
+    networks:
+      - hadoop-net
+
+networks:
+  hadoop-net:
+    driver: bridge

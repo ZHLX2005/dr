@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  postgres-vector:
+    image: ankane/pgvector
+    container_name: postgres-vector
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: container
+      POSTGRES_PASSWORD: "223456"
+      POSTGRES_DB: vectordb
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+      TZ: UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+      - ./postgresql/init-scripts:/docker-entrypoint-initdb.d
+      - ./postgresql/backups:/backups
+      - ./postgresql/config:/etc/postgresql
+    networks:
+      - postgres-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U container -d vectordb"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=vector"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=1GB"
+
+    # pgadmin:
+    #   image: dpage/pgadmin4
+    #   container_name: pgadmin
+    #   restart: unless-stopped
+    #   environment:
+    #     PGADMIN_DEFAULT_EMAIL: 2096343460@qq.com
+    #     PGADMIN_DEFAULT_PASSWORD: "223456"
+    #   ports:
+    #     - "8080:80"
+    #   volumes:
+    #     - ./postgresql/pgadmin-data:/var/lib/pgadmin
+    #   networks:
+    #     - postgres-network
+    #   depends_on:
+    #     - postgres-vector
+
+networks:
+  postgres-network:
+    driver: bridge
+    name: postgres-vector-network
+
+volumes:
+  pgdata:
+    driver: local
