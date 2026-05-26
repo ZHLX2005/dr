@@ -1,0 +1,1 @@
+1. docker-compose.yml 期望 ./nginx/nginx.conf 是一个文件，但实际路径并不存在，导致 Docker 创建了一个目录来挂载到容器内的文件上
