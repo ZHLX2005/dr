@@ -6,6 +6,7 @@ services:
     container_name: prometheus
     volumes:
       - ./cloud-grafana/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./cloud-grafana/shared:/shared
     ports:
       - "9090:9090"
     restart: unless-stopped
@@ -19,6 +20,7 @@ services:
       - "3000:3000"
     volumes:
       - ./cloud-grafana/grafana-data:/var/lib/grafana
+      - ./cloud-grafana/shared:/shared
     depends_on:
       - prometheus
     restart: unless-stopped

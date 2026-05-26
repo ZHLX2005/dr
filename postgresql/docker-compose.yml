@@ -18,6 +18,7 @@ services:
       - ./postgresql/init-scripts:/docker-entrypoint-initdb.d
       - ./postgresql/backups:/backups
       - ./postgresql/config:/etc/postgresql
+      - ./postgresql/shared:/shared
     networks:
       - postgres-network
     healthcheck:

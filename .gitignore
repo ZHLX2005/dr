@@ -19,8 +19,7 @@ dev/hive/hive/
 dev/traefik/traefik/
 
 # --- Stack: cloud-grafana ---
-cloud-grafana/grafana/
-cloud-grafana/prometheus/
+cloud-grafana/grafana-data/
 
 # --- 通用排除 ---
 .env

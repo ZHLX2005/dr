@@ -21,6 +21,7 @@ services:
       - ./mysql/conf:/etc/mysql/conf.d
       - ./mysql/logs:/var/log/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/shared:/shared
     command:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4

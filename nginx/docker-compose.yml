@@ -12,6 +12,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/html:/usr/share/nginx/html:rw
       - ./nginx/logs:/var/log/nginx:rw
+      - ./nginx/shared:/shared
     restart: unless-stopped
     networks:
       - nginx-network
