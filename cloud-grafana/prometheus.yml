@@ -5,4 +5,5 @@ scrape_configs:
   - job_name: "go-demo"
     metrics_path: /metrics
     static_configs:
+    # 直接通过docker访问主机
       - targets: ["host.docker.internal:8080"]

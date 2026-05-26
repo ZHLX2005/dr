@@ -305,6 +305,7 @@ echo "Self-signed cert generated. DO NOT commit *.pem to git."
 | **Windows 下生成 `.sh` 脚本使用 CRLF 换行** | 脚本在 Linux 容器里无法执行，报错 `/bin/sh^M: bad interpreter` | 显式使用 LF 换行符写入脚本文件 |
 | **`example/` 目录被根目录 `**/` 型规则误忽略** | 用户拉取代码后找不到配置模板 | `.gitignore` 避免 blanket 规则，或显式 `!example/` 例外 |
 | **使用 `**/data/`、`**/logs/` 通配排除运行时数据** | 误伤 `example/data/`、`example/logs/` 等需要提交的案例数据 | `.gitignore` 逐行追加具体运行时目录，如 `mysql/mysql/`、`web/redis/` |
+| **`.gitignore` 按直觉或挂载子目录名排除，未按实际运行时目录推导** | cloud-grafana 的 compose 在 `cloud-grafana/` 内执行，挂载 `./cloud-grafana/grafana-data` 实际对应 `cloud-grafana/cloud-grafana/grafana-data`。误写为 `cloud-grafana/grafana/` 或 `cloud-grafana/grafana-data/` 均无法正确排除 | 严格按"compose 执行目录 + 挂载相对路径"推导实际运行时目录，再写入 `.gitignore` |
 | **提交真实 SSL 证书到 git** | 私钥泄露风险 | `example/ssl/` 只提交生成脚本和说明，不提交 `*.pem` |
 | **shell 脚本缺少 shebang (`#!/bin/sh`)** | 在某些环境下被执行失败或行为异常 | 每个 `.sh` 文件第一行必须是 shebang |
 
